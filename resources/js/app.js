@@ -8,25 +8,43 @@ require('./bootstrap');
 
 window.Vue = require('vue');
 
+// import Vue from 'vue'
+import VueRouter from 'vue-router'
+Vue.use(VueRouter)
 /**
  * The following block of code may be used to automatically register your
  * Vue components. It will recursively scan this directory for the Vue
  * components and automatically register them with their "basename".
  *
  * Eg. ./components/ExampleComponent.vue -> <example-component></example-component>
- */
+*/
+
+// 1. Define route components.
+// These can be imported from other files
+// const Profile = { template: '<div>foo</div>' }
+// const Dashboard = { template: '<div>bar</div>' }
 
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+const routes = [
+  { path: '/dashboard', component: require('./components/DashboardComponent.vue').default },
+  { path: '/profile', component: require('./components/ProfileComponent.vue').default }
+]
 
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
+// Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 
+// 3. Create the router instance and pass the `routes` option
+// You can pass in additional options here, but let's
+// keep it simple for now.
+const router = new VueRouter({
+  routes // short for `routes: routes`
+})
+
+// 4. Create and mount the root instance.
+// Make sure to inject the router with the router option to make the
+// whole app router-aware.
 const app = new Vue({
-    el: '#app',
-});
+  el: '#app',
+  router
+})
