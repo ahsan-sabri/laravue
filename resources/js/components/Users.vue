@@ -21,17 +21,17 @@
                                 <th>SL</th>
                                 <th>Name</th>
                                 <th>Email</th>
-                                <th>Type</th>
+                                <th>Registered At</th>
                                 <th>Status</th>
                                 <th>Modify</th>
                             </tr>
                         </thead>
                         <tbody>
-                            <tr>
-                                <td>1</td>
-                                <td>John Doe</td>
-                                <td>john@gmail.com</td>
-                                <td>Admin User</td>
+                            <tr v-for = "user in users" :key = "user.id">
+                                <td>{{ user.id }}</td>
+                                <td>{{ user.name | capitalize }}</td>
+                                <td>{{ user.email }}</td>
+                                <td>{{ user.created_at | dateFormat }}</td>
                                 <td>
                                     <i class="fas fa-check-circle fa-lg green" aria-hidden></i>
                                 </td>
@@ -65,28 +65,31 @@
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <div class="modal-body">
-                    <!-- user create form with vue -->
-                    <!-- name -->
-                    <div class="form-group">
-                        <input v-model="form.name" type="text" name="name" placeholder="Name" class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
-                        <has-error :form="form" field="name"></has-error>
+                <form @submit.prevent="createUser">
+                    <div class="modal-body">
+                        <!-- user create form with vue -->
+                        <!-- name -->
+                        <div class="form-group">
+                            <input v-model="form.name" type="text" name="name" placeholder="Name" class="form-control" :class="{ 'is-invalid': form.errors.has('name') }">
+                            <has-error :form="form" field="name"></has-error>
+                        </div>
+                        <!-- email -->
+                        <div class="form-group">
+                            <input v-model="form.email" type="email" name="email" placeholder="Email" class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
+                            <has-error :form="form" field="email"></has-error>
+                        </div>
+                        <!-- password -->
+                        <div class="form-group">
+                            <input v-model="form.password" type="password" name="password" placeholder="Password" class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
+                            <has-error :form="form" field="password"></has-error>
+                        </div>
                     </div>
-                    <!-- email -->
-                    <div class="form-group">
-                        <input v-model="form.email" type="email" name="email" placeholder="Email" class="form-control" :class="{ 'is-invalid': form.errors.has('email') }">
-                        <has-error :form="form" field="email"></has-error>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-success">Create</button>
                     </div>
-                    <!-- password -->
-                    <div class="form-group">
-                        <input v-model="form.password" type="password" name="password" placeholder="Password" class="form-control" :class="{ 'is-invalid': form.errors.has('password') }">
-                        <has-error :form="form" field="password"></has-error>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-success">Create</button>
-                </div>
+                </form>
+                <!-- form close -->
             </div>
         </div>
     </div>
@@ -97,6 +100,8 @@
 export default {
     data() {
         return {
+            // empty user object
+            users: {},
             // Create a new form instance
             form: new Form({
                 name: '',
@@ -106,8 +111,18 @@ export default {
             })
         }
     },
-    mounted() {
-        console.log('Component mounted.')
+    methods: {
+        listUsers() {
+            axios.get('api/user').then(({
+                data
+            }) => (this.users = data.data));
+        },
+        createUser() {
+            this.form.post('api/user');
+        }
+    },
+    created() {
+        this.listUsers();
     }
 }
 </script>
