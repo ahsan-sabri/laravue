@@ -39,7 +39,7 @@
                                     <a href="#">
                                         <i class="fas fa-edit blue" aria-hidden></i>
                                     </a>&nbsp;
-                                    <a href="#">
+                                    <a href="#" @click="deleteUser(user.id)">
                                         <i class="fas fa-trash red" aria-hidden></i>
                                     </a>
                                 </td>
@@ -113,16 +113,80 @@ export default {
     },
     methods: {
         listUsers() {
-            axios.get('api/user').then(({
-                data
-            }) => (this.users = data.data));
+            axios.get('api/user')
+            .then(({data}) => (this.users = data.data));
         },
         createUser() {
-            this.form.post('api/user');
+            //  start the progress bar
+            this.$Progress.start();
+            //  create user
+            this.form.post('api/user')
+            // using promise to check success
+            .then(() => {
+                // fire event
+                Fire.$emit('successReload');
+                // hide modal
+                $('#addNew').modal('hide');
+                // fire swal with toaster
+                toast.fire({
+                    icon: 'success',
+                    title: 'User Created Successfully!'
+                });
+
+            })
+            // error throw
+            .catch(() => {
+                toast.fire(
+                    'failed!',
+                    'Something wrong!',
+                    'warning'
+                )
+            });
+            //  finish the progress bar
+            this.$Progress.finish();
+
+        },
+        deleteUser(id) {
+            swal.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            })
+            .then((result) => {
+                // after confirmation
+                if (result.value) {
+                    this.form.delete('api/user/'+id)
+                    // success
+                    .then(() => {
+                        toast.fire(
+                            'Deleted!',
+                            'User has been deleted.',
+                            'success'
+                        )
+                        Fire.$emit('successReload');
+                    })
+                    // failure
+                    .catch(() => {
+                        toast.fire(
+                            'Failed!',
+                            'Something wrong!',
+                            'warning'
+                        )
+                    });
+                }
+            });
         }
     },
-    created() {
+    mounted() {
         this.listUsers();
+        Fire.$on('successReload', () => {
+            this.listUsers();
+        });
+        // setInterval(() => this.listUsers(), 3000);
     }
 }
 </script>

@@ -200,7 +200,9 @@ scratch. This page gets rid of all links and provides the needed markup only.
                             <a class="nav-link" href="{{ route('logout') }}" onclick="event.preventDefault();
                              document.getElementById('logout-form').submit();">
                                 <i class="nav-icon fas fa-power-off red"></i>
-                                {{ __('Logout') }}
+                                <p>
+                                    {{ __('Logout') }}
+                                </p>
                             </a>
 
                             <form id="logout-form" action="{{ route('logout') }}" method="POST" style="display: none;">
@@ -226,6 +228,8 @@ scratch. This page gets rid of all links and provides the needed markup only.
                     <!-- component matched by the route will render here -->
                     <router-view></router-view>
 
+                    {{-- vue progress bar --}}
+                    <vue-progress-bar></vue-progress-bar>
                 </div><!-- /.container-fluid -->
             </div>
             <!-- /.content -->

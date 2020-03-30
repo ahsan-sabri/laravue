@@ -11,6 +11,24 @@ window.Vue = require('vue');
 import { Form, HasError, AlertError } from 'vform';
 // import moment
 import moment from 'moment';
+// import sweetalert
+import swal from 'sweetalert2';
+window.swal = swal;
+// configure toaster with swal
+const toast = swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    onOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer)
+        toast.addEventListener('mouseleave', Swal.resumeTimer)
+    }
+});
+window.toast = toast;
+// new vue event to use everywhere
+window.Fire = new Vue();
 
 window.Form = Form;
 Vue.component(HasError.name, HasError);
@@ -19,14 +37,21 @@ Vue.component(AlertError.name, AlertError);
 // import Vue from 'vue'
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
+// vue progressbar
+import VueProgressBar from 'vue-progressbar';
+Vue.use(VueProgressBar, { // options
+    color: '#bffaf3',
+    failedColor: '#874b4b',
+    height: '3px'
+});
 
 // capitalize fucntion for vue components
 Vue.filter('capitalize', function(text){
     return text.charAt(0).toUpperCase() + text.slice(1); // for capitalize first letter
 });
-
+// format date with required format
 Vue.filter('dateFormat', function(date){
-    return moment(date).format('MMMM DD, YYYY h:mm a'); // date format 
+    return moment(date).format('MMMM DD, YYYY h:mm a'); // date format
 });
 /**
  * The following block of code may be used to automatically register your
