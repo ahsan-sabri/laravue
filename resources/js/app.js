@@ -34,6 +34,22 @@ window.Form = Form;
 Vue.component(HasError.name, HasError);
 Vue.component(AlertError.name, AlertError);
 
+// passport components
+Vue.component(
+  'passport-clients',
+  require('./components/passport/Clients.vue').default
+);
+
+Vue.component(
+  'passport-authorized-clients',
+  require('./components/passport/AuthorizedClients.vue').default
+);
+
+Vue.component(
+  'passport-personal-access-tokens',
+  require('./components/passport/PersonalAccessTokens.vue').default
+);
+
 // import Vue from 'vue'
 import VueRouter from 'vue-router';
 Vue.use(VueRouter);
@@ -73,7 +89,8 @@ const routes = [
   { path: '/home', component: require('./components/Home.vue').default },
   { path: '/dashboard', component: require('./components/Dashboard.vue').default },
   { path: '/users', component: require('./components/Users.vue').default },
-  { path: '/profile', component: require('./components/Profile.vue').default }
+  { path: '/profile', component: require('./components/Profile.vue').default },
+  { path: '/developer', component: require('./components/Developer.vue').default }
 ];
 
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);

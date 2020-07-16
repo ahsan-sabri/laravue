@@ -8,9 +8,15 @@ use Illuminate\Support\Facades\Hash;
 
 use App\User;
 use App\Http\Requests\StoreUserRequest;
+use App\Http\Requests\UpdateUserRequest;
 
 class UserController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:api');
+    }
+
     /**
      * Display a listing of the resource.
      *
@@ -51,15 +57,30 @@ class UserController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
+     * Display the specified resource info.
      *
-     * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function profile()
     {
-        //
+        return auth('api')->user();
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\UpdateUserRequest  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(UpdateUserRequest $request, $id)
+    {   
+        // find user
+        $user = User::findOrFail($id);
+        // update user
+        $user->update($request->all());
+
     }
 
     /**

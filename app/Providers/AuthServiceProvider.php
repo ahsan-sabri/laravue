@@ -4,6 +4,7 @@ namespace App\Providers;
 
 use Illuminate\Foundation\Support\Providers\AuthServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\Gate;
+use Laravel\Passport\Passport;
 
 class AuthServiceProvider extends ServiceProvider
 {
@@ -15,6 +16,13 @@ class AuthServiceProvider extends ServiceProvider
     protected $policies = [
         // 'App\Model' => 'App\Policies\ModelPolicy',
     ];
+    protected $clientIds = [
+        // Client ID: 1
+        // Client secret: UtWZQwgmqZ0FkSNyojIFQRFq5wc80sORAhyDojgg
+        // Client ID: 2
+        // Client secret: g2YsXwjVdLXaNIQAi03Am3mIDLuoK2gONX69QUsW
+
+    ];
 
     /**
      * Register any authentication / authorization services.
@@ -25,6 +33,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+        Passport::routes();
     }
 }

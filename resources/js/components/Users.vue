@@ -7,7 +7,7 @@
                     <h3 class="card-title">Users List</h3>
                     <!-- button for new user modal -->
                     <div class="card-tools">
-                        <button class="btn btn-success" data-toggle="modal" data-target="#addNew">
+                        <button class="btn btn-success" @click="newModal">
                             <span>Add New</span>&nbsp;<i class="fas fa-user-plus" aria-hidden></i>
                         </button>
                     </div>
@@ -36,7 +36,7 @@
                                     <i class="fas fa-check-circle fa-lg green" aria-hidden></i>
                                 </td>
                                 <td>
-                                    <a href="#">
+                                    <a href="#" @click="editModal(user)">
                                         <i class="fas fa-edit blue" aria-hidden></i>
                                     </a>&nbsp;
                                     <a href="#" @click="deleteUser(user.id)">
@@ -60,12 +60,13 @@
         <div class="modal-dialog modal-dialog-centered" role="document">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h5 class="modal-title" id="addNewModalLabel">New User</h5>
+                    <h5 class="modal-title" v-show="!editmode" id="addNewModalLabel">New User</h5>
+                    <h5 class="modal-title" v-show="editmode" id="addNewModalLabel">Update User</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                         <span aria-hidden="true">&times;</span>
                     </button>
                 </div>
-                <form @submit.prevent="createUser">
+                <form @submit.prevent="editmode ? updateUser() : createUser()">
                     <div class="modal-body">
                         <!-- user create form with vue -->
                         <!-- name -->
@@ -86,7 +87,8 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-success">Create</button>
+                        <button v-show="editmode" type="submit" class="btn btn-success">Update</button>
+                        <button v-show="!editmode" type="submit" class="btn btn-success">Create</button>
                     </div>
                 </form>
                 <!-- form close -->
@@ -100,10 +102,13 @@
 export default {
     data() {
         return {
+            //edit mode
+            editmode: false,
             // empty user object
             users: {},
             // Create a new form instance
             form: new Form({
+                id: '',
                 name: '',
                 email: '',
                 password: '',
@@ -112,10 +117,27 @@ export default {
         }
     },
     methods: {
+        // create item modal
+        newModal() {
+            this.editmode = false;
+            this.form.reset();
+            this.form.clear();
+            $('#addNew').modal('show');
+        },
+        // edit item modal
+        editModal(user) {
+            this.editmode = true;
+            this.form.reset();
+            this.form.clear();
+            $('#addNew').modal('show');
+            this.form.fill(user);
+        },
+        // list items
         listUsers() {
             axios.get('api/user')
             .then(({data}) => (this.users = data.data));
         },
+        // create item
         createUser() {
             //  start the progress bar
             this.$Progress.start();
@@ -146,6 +168,38 @@ export default {
             this.$Progress.finish();
 
         },
+        // update item
+        updateUser() {
+            //  start the progress bar
+            this.$Progress.start();
+            //  update user
+            this.form.put('api/user/'+this.form.id)
+            // using promise to check success
+            .then(() => {
+                // fire event
+                Fire.$emit('successReload');
+                // hide modal
+                $('#addNew').modal('hide');
+                // fire swal with toaster
+                toast.fire({
+                    icon: 'success',
+                    title: 'User Updated Successfully!'
+                });
+
+            })
+            // error throw
+            .catch(() => {
+                toast.fire(
+                    'failed!',
+                    'Something wrong!',
+                    'warning'
+                )
+            });
+            //  finish the progress bar
+            this.$Progress.finish();
+
+        },
+        // delete item
         deleteUser(id) {
             swal.fire({
                 title: 'Are you sure?',
